@@ -4,6 +4,7 @@ This project is a simple web application that displays clocks for different time
 ## Features
 - Displays the current time for London, India, and Florida.
 - Displays a digital clock alongside each analog clock.
+- Digital clocks use 12-hour time with AM/PM indicators.
 - Updates the time automatically every second.
 - Simple and intuitive user interface.
 
@@ -13,9 +14,9 @@ This project is a simple web application that displays clocks for different time
 - JavaScript (jQuery)
 
 ## Timezone Details
-- **London (GMT):** Greenwich Mean Time, the standard time zone in London, United Kingdom.
-- **India (IST):** Indian Standard Time, the standard time zone in India.
-- **Florida (EST):** Eastern Standard Time, the standard time zone in Florida, United States.
+- **London:** `Europe/London`
+- **India:** `Asia/Kolkata`
+- **Florida:** `America/New_York`
 
 # Screenshot
 Live: https://k4khushhali.github.io/timezone-clock/ 
