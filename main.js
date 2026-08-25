@@ -14,8 +14,6 @@
     var hourStep = 2 * Math.PI / 12;
 
     var initialize = function () {
-      $(canvas).css('max-width', '100%');
-      $(canvas).css('width', $(canvas).css('height'));
       canvas.width = canvas.height;
       if (preset.hasShadow) {
         ctx.shadowOffsetX = 0.0;
@@ -138,8 +136,9 @@
       }
 
       var date = new Date();
-      if (options.timezone) {
-        date = changeTimezone(date, options.timezone);
+      var timezone = typeof options.timezone === "function" ? options.timezone() : options.timezone;
+      if (timezone) {
+        date = changeTimezone(date, timezone);
       }
 
       var s = date.getSeconds();
@@ -342,6 +341,24 @@ $(document).ready(function(){
   		},{
   			timezone:"Europe/London"
   		});
+
+	  function updateDigitalClocks() {
+	    $(".digital-clock").each(function () {
+	      var timezone = $(this).data("timezone");
+	      var time = new Intl.DateTimeFormat("en-GB", {
+	        timeZone: timezone,
+	        hour: "2-digit",
+	        minute: "2-digit",
+	        second: "2-digit",
+	        hour12: true
+	      }).format(new Date());
+
+	      $(this).text(time);
+	    });
+	  }
+
+	  updateDigitalClocks();
+	  window.setInterval(updateDigitalClocks, 1000);
 	});
 
 	$(function () {
@@ -357,7 +374,141 @@ $(document).ready(function(){
   		$("#usaTimeZone").htAnalogClock({
         borderWidth: 3.0,
   		},{
-  			timezone:"America/New_York"
-  		});
+				timezone: function () {
+	        return $("#usaTimezone").val();
+	      }
+			});
 	});
+
+  function getTimezoneOffset(date, timezone) {
+    var parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(date).reduce(function (values, part) {
+      if (part.type !== "literal") {
+        values[part.type] = Number(part.value);
+      }
+      return values;
+    }, {});
+
+    return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) - date.getTime();
+  }
+
+  function parseTimezoneDate(value, timezone) {
+    var fields = value.split("T");
+    var dateFields = fields[0].split("-").map(Number);
+    var timeFields = fields[1].split(":").map(Number);
+    var wallTime = Date.UTC(dateFields[0], dateFields[1] - 1, dateFields[2], timeFields[0], timeFields[1]);
+    var date = new Date(wallTime);
+    var offset = getTimezoneOffset(date, timezone);
+    date = new Date(wallTime - offset);
+    offset = getTimezoneOffset(date, timezone);
+    return new Date(wallTime - offset);
+  }
+
+  function getCurrentDateInTimezone(timezone) {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date()).reduce(function (values, part) {
+      if (part.type !== "literal") {
+        values[part.type] = part.value;
+      }
+      return values;
+    }, {});
+
+    return parts.year + "-" + parts.month + "-" + parts.day;
+  }
+
+  function updateComparison() {
+    var hourValue = $("#comparisonHour").val();
+    var minuteValue = $("#comparisonMinute").val();
+    var meridiemValue = $("#comparisonMeridiem").val();
+    var result = $("#comparisonResult");
+    if (!hourValue || !minuteValue || !meridiemValue) {
+      result.text("Choose a time to compare.");
+      return;
+    }
+
+    var usaTimezone = $("#usaTimezone").val();
+    var source = $("#sourceTimezone").val();
+    if (source === "usa") {
+      source = usaTimezone;
+    }
+    var hour = Number(hourValue) % 12;
+    if (meridiemValue === "PM") {
+      hour += 12;
+    }
+    var timeValue = String(hour).padStart(2, "0") + ":" + minuteValue;
+    var input = getCurrentDateInTimezone(source) + "T" + timeValue;
+    var date = parseTimezoneDate(input, source);
+    var timezones = [
+      { value: "Europe/London", label: "London" },
+      { value: "Asia/Kolkata", label: "India" },
+      { value: usaTimezone, label: "USA" }
+    ];
+
+    result.empty();
+    timezones.forEach(function (timezone) {
+      if (timezone.value === source) {
+        return;
+      }
+
+      var formatted = new Intl.DateTimeFormat("en-GB", {
+        timeZone: timezone.value,
+        dateStyle: "medium",
+        timeStyle: "short",
+        hour12: true
+      }).format(date);
+
+      $("<div>")
+        .addClass("comparison-result-item")
+        .text(timezone.label + ": " + formatted)
+        .appendTo(result);
+    });
+  }
+
+  for (var hour = 1; hour <= 12; hour++) {
+    $("#comparisonHour").append(
+      $("<option>").val(String(hour)).text(String(hour).padStart(2, "0"))
+    );
+  }
+
+  var minuteOptions = [0, 15, 30, 45];
+  $("#comparisonMinute").empty().append($("<option>").val("").text("Min"));
+  minuteOptions.forEach(function (minute) {
+    var minuteValue = String(minute).padStart(2, "0");
+    $("#comparisonMinute").append(
+      $("<option>").val(minuteValue).text(String(minute))
+    );
+  });
+
+  var systemTime = new Date();
+  var systemHour = systemTime.getHours();
+  var systemMinute = Math.floor(systemTime.getMinutes() / 15) * 15;
+  $("#comparisonHour").val(String(systemHour % 12 || 12));
+  $("#comparisonMinute").val(String(systemMinute).padStart(2, "0"));
+  $("#comparisonMeridiem").val(systemHour < 12 ? "AM" : "PM");
+
+  $("#comparisonHour, #comparisonMinute, #comparisonMeridiem, #sourceTimezone")
+    .on("input change", updateComparison);
+
+  $("#usaTimezone").on("change", function () {
+    var timezoneLabel = $("#usaTimezone option:selected").text();
+    $("#usaDigitalTime")
+      .data("timezone", $("#usaTimezone").val())
+      .attr("aria-label", "Current time in USA " + timezoneLabel);
+    updateComparison();
+  });
+
+  updateComparison();
+
 });
