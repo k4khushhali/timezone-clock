@@ -11,84 +11,63 @@
   <body>
     <div class="background">
       <div class="row">
-        <!-- United Kingdome Timezone -->
+        <!-- London Timezone -->
         <div class="column">
-          <h1 class="title">UK London</h1>
+          <h1 class="title">London</h1>
           <canvas id="ukTimeZone" height="400"></canvas>
-          <time class="digital-clock" id="ukDigitalTime" data-timezone="Europe/London" aria-label="Current time in UK London">--:--:--</time>
+          <time class="digital-clock" id="ukDigitalTime" data-timezone="Europe/London" aria-label="Current time in London">--:--:--</time>
         </div>
           <!-- India Timezone -->
         <div class="column">
-          <h1 class="title">India Kolkatta</h1>
+          <h1 class="title">India</h1>
           <canvas id="indiaTimeZone" height="400"></canvas>
           <time class="digital-clock" id="indiaDigitalTime" data-timezone="Asia/Kolkata" aria-label="Current time in India Kolkata">--:--:--</time>
         </div>
-          <!-- USA Florida Timezone -->
+            <!-- USA Eastern Timezone -->
         <div class="column">
-          <h1 class="title">USA Florida</h1>
-          <canvas id="usaTimeZone" height="400"></canvas>
-          <time class="digital-clock" id="usaDigitalTime" data-timezone="America/New_York" aria-label="Current time in USA Florida">--:--:--</time>
+                <h1 class="title">USA <span class="usa-timezone-control">
+              <select id="usaTimezone" aria-label="USA timezone">
+                <option value="America/New_York">EST</option>
+                <option value="America/Chicago">CST</option>
+                <option value="America/Denver">MST</option>
+                <option value="America/Los_Angeles">PST</option>
+              </select>
+                </span></h1>
+            <canvas id="usaTimeZone" height="400"></canvas>
+            <time class="digital-clock" id="usaDigitalTime" data-timezone="America/New_York" aria-label="Current time in USA EST">--:--:--</time>
         </div>
       </div>
 
       <section class="comparison" aria-labelledby="comparisonTitle">
-        <h2 id="comparisonTitle">Compare Timezones</h2>
-        <p class="comparison-description">Enter a local time to see when it happens in another location.</p>
+        <h2 id="comparisonTitle">Timezone Comparison</h2>
+        <p class="comparison-description">Choose a timezone and time to see the equivalent time in the other locations.</p>
         <div class="comparison-controls">
           <label>
-            Time in
+            Timezone
             <select id="sourceTimezone">
               <option value="Europe/London">London</option>
               <option value="Asia/Kolkata">India</option>
-              <option value="America/New_York">Florida</option>
+              <option value="usa">USA</option>
             </select>
           </label>
           <label>
-            Date
-            <input id="comparisonDate" type="date">
-          </label>
-          <label>
-            Hour
-            <select id="comparisonHour">
-              <option value="">--</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-              <option>12</option>
-            </select>
-          </label>
-          <label>
-            Minute
-            <select id="comparisonMinute">
-              <option value="">--</option>
-            </select>
-          </label>
-          <label>
-            AM/PM
-            <select id="comparisonMeridiem">
-              <option value="">--</option>
-              <option>AM</option>
-              <option>PM</option>
-            </select>
-          </label>
-          <label>
-            Show time in
-            <select id="targetTimezone">
-              <option value="Asia/Kolkata">India</option>
-              <option value="Europe/London">London</option>
-              <option value="America/New_York">Florida</option>
-            </select>
+            Time
+            <span class="time-selectors">
+              <select id="comparisonHour" aria-label="Hour">
+                <option value="">Hour</option>
+              </select>
+              <select id="comparisonMinute" aria-label="Minute">
+                <option value="">Min</option>
+              </select>
+              <select id="comparisonMeridiem" aria-label="AM or PM">
+                <option value="">AM/PM</option>
+                <option>AM</option>
+                <option>PM</option>
+              </select>
+            </span>
           </label>
         </div>
-        <p id="comparisonResult" class="comparison-result" aria-live="polite">Choose a date and time to compare.</p>
+        <div id="comparisonResult" class="comparison-result" aria-live="polite">Choose a time to compare.</div>
       </section>
     </div>
 

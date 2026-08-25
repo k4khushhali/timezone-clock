@@ -34,7 +34,8 @@ body {
   width: min(1200px, 100%);
 }
 
-.column{
+.column {
+  position: relative;
   text-align: center;
   margin: 0;
   display: flex;
@@ -47,6 +48,27 @@ body {
   width: min(400px, 100%);
   height: auto;
   aspect-ratio: 1;
+}
+
+.usa-timezone-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.usa-timezone-control select {
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  background: #fff;
+  color: #202938;
+  font: inherit;
 }
 
 .digital-clock {
@@ -89,14 +111,10 @@ body {
 
 .comparison-controls {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   max-width: 920px;
   margin: 0 auto;
   gap: 16px;
-}
-
-.comparison-controls label:first-child {
-  grid-column: span 2;
 }
 
 .comparison-controls label {
@@ -109,8 +127,7 @@ body {
   font-weight: bold;
 }
 
-.comparison-controls select,
-.comparison-controls input {
+.comparison-controls select {
   width: 100%;
   box-sizing: border-box;
   min-height: 46px;
@@ -123,11 +140,27 @@ body {
   font-size: 1rem;
 }
 
+.time-selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 8px;
+}
+
 .comparison-result {
-  max-width: 780px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 920px;
   margin: 24px auto 0;
-  padding: 14px 16px;
   box-sizing: border-box;
+  gap: 16px;
+}
+
+.comparison-result:empty {
+  display: none;
+}
+
+.comparison-result-item {
+  padding: 14px 16px;
   border-radius: 8px;
   background: rgba(248, 136, 136, 0.14);
   color: #fff;
@@ -155,7 +188,12 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .comparison-controls label:first-child {
-    grid-column: auto;
+  .time-selectors {
+    gap: 6px;
   }
+
+  .comparison-result {
+    grid-template-columns: 1fr;
+  }
+
 }

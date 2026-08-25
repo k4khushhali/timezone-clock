@@ -136,8 +136,9 @@
       }
 
       var date = new Date();
-      if (options.timezone) {
-        date = changeTimezone(date, options.timezone);
+      var timezone = typeof options.timezone === "function" ? options.timezone() : options.timezone;
+      if (timezone) {
+        date = changeTimezone(date, timezone);
       }
 
       var s = date.getSeconds();
@@ -373,8 +374,10 @@ $(document).ready(function(){
   		$("#usaTimeZone").htAnalogClock({
         borderWidth: 3.0,
   		},{
-  			timezone:"America/New_York"
-  		});
+				timezone: function () {
+	        return $("#usaTimezone").val();
+	      }
+			});
 	});
 
   function getTimezoneOffset(date, timezone) {
@@ -409,41 +412,103 @@ $(document).ready(function(){
     return new Date(wallTime - offset);
   }
 
+  function getCurrentDateInTimezone(timezone) {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date()).reduce(function (values, part) {
+      if (part.type !== "literal") {
+        values[part.type] = part.value;
+      }
+      return values;
+    }, {});
+
+    return parts.year + "-" + parts.month + "-" + parts.day;
+  }
+
   function updateComparison() {
-    var dateValue = $("#comparisonDate").val();
     var hourValue = $("#comparisonHour").val();
     var minuteValue = $("#comparisonMinute").val();
     var meridiemValue = $("#comparisonMeridiem").val();
     var result = $("#comparisonResult");
-    if (!dateValue || !hourValue || !minuteValue || !meridiemValue) {
-      result.text("Choose a date and time to compare.");
+    if (!hourValue || !minuteValue || !meridiemValue) {
+      result.text("Choose a time to compare.");
       return;
     }
 
+    var usaTimezone = $("#usaTimezone").val();
     var source = $("#sourceTimezone").val();
-    var target = $("#targetTimezone").val();
+    if (source === "usa") {
+      source = usaTimezone;
+    }
     var hour = Number(hourValue) % 12;
     if (meridiemValue === "PM") {
       hour += 12;
     }
-    var input = dateValue + "T" + String(hour).padStart(2, "0") + ":" + minuteValue;
+    var timeValue = String(hour).padStart(2, "0") + ":" + minuteValue;
+    var input = getCurrentDateInTimezone(source) + "T" + timeValue;
     var date = parseTimezoneDate(input, source);
-    var formatted = new Intl.DateTimeFormat("en-GB", {
-      timeZone: target,
-      dateStyle: "medium",
-      timeStyle: "short",
-      hour12: true
-    }).format(date);
+    var timezones = [
+      { value: "Europe/London", label: "London" },
+      { value: "Asia/Kolkata", label: "India" },
+      { value: usaTimezone, label: "USA" }
+    ];
 
-    result.text("Equivalent time: " + formatted);
+    result.empty();
+    timezones.forEach(function (timezone) {
+      if (timezone.value === source) {
+        return;
+      }
+
+      var formatted = new Intl.DateTimeFormat("en-GB", {
+        timeZone: timezone.value,
+        dateStyle: "medium",
+        timeStyle: "short",
+        hour12: true
+      }).format(date);
+
+      $("<div>")
+        .addClass("comparison-result-item")
+        .text(timezone.label + ": " + formatted)
+        .appendTo(result);
+    });
   }
 
-  for (var minute = 0; minute < 60; minute++) {
-    $("#comparisonMinute").append(
-      $("<option>").val(String(minute).padStart(2, "0")).text(String(minute).padStart(2, "0"))
+  for (var hour = 1; hour <= 12; hour++) {
+    $("#comparisonHour").append(
+      $("<option>").val(String(hour)).text(String(hour).padStart(2, "0"))
     );
   }
 
-  $("#comparisonDate, #comparisonHour, #comparisonMinute, #comparisonMeridiem, #sourceTimezone, #targetTimezone")
+  var minuteOptions = [0, 15, 30, 45];
+  $("#comparisonMinute").empty().append($("<option>").val("").text("Min"));
+  minuteOptions.forEach(function (minute) {
+    var minuteValue = String(minute).padStart(2, "0");
+    $("#comparisonMinute").append(
+      $("<option>").val(minuteValue).text(String(minute))
+    );
+  });
+
+  var systemTime = new Date();
+  var systemHour = systemTime.getHours();
+  var systemMinute = Math.floor(systemTime.getMinutes() / 15) * 15;
+  $("#comparisonHour").val(String(systemHour % 12 || 12));
+  $("#comparisonMinute").val(String(systemMinute).padStart(2, "0"));
+  $("#comparisonMeridiem").val(systemHour < 12 ? "AM" : "PM");
+
+  $("#comparisonHour, #comparisonMinute, #comparisonMeridiem, #sourceTimezone")
     .on("input change", updateComparison);
+
+  $("#usaTimezone").on("change", function () {
+    var timezoneLabel = $("#usaTimezone option:selected").text();
+    $("#usaDigitalTime")
+      .data("timezone", $("#usaTimezone").val())
+      .attr("aria-label", "Current time in USA " + timezoneLabel);
+    updateComparison();
+  });
+
+  updateComparison();
+
 });
