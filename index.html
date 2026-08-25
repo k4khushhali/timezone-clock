@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Timezone</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
@@ -28,6 +29,34 @@
           <canvas id="usaTimeZone" height="400"></canvas>
           <time class="digital-clock" id="usaDigitalTime" data-timezone="America/New_York" aria-label="Current time in USA Florida">--:--:--</time>
         </div>
+
+        <section class="comparison" aria-labelledby="comparisonTitle">
+          <h2 id="comparisonTitle">Compare Timezones</h2>
+          <p class="comparison-description">Enter a local time to see when it happens in another location.</p>
+          <div class="comparison-controls">
+            <label>
+              Time in
+              <select id="sourceTimezone">
+                <option value="Europe/London">London</option>
+                <option value="Asia/Kolkata">India</option>
+                <option value="America/New_York">Florida</option>
+              </select>
+            </label>
+            <label>
+              Date and time
+              <input id="comparisonDateTime" type="datetime-local">
+            </label>
+            <label>
+              Show time in
+              <select id="targetTimezone">
+                <option value="Asia/Kolkata">India</option>
+                <option value="Europe/London">London</option>
+                <option value="America/New_York">Florida</option>
+              </select>
+            </label>
+          </div>
+          <p id="comparisonResult" class="comparison-result" aria-live="polite">Choose a date and time to compare.</p>
+        </section>
       </div>
     </div>
 

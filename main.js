@@ -14,8 +14,6 @@
     var hourStep = 2 * Math.PI / 12;
 
     var initialize = function () {
-      $(canvas).css('max-width', '100%');
-      $(canvas).css('width', $(canvas).css('height'));
       canvas.width = canvas.height;
       if (preset.hasShadow) {
         ctx.shadowOffsetX = 0.0;
@@ -378,4 +376,59 @@ $(document).ready(function(){
   			timezone:"America/New_York"
   		});
 	});
+
+  function getTimezoneOffset(date, timezone) {
+    var parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(date).reduce(function (values, part) {
+      if (part.type !== "literal") {
+        values[part.type] = Number(part.value);
+      }
+      return values;
+    }, {});
+
+    return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) - date.getTime();
+  }
+
+  function parseTimezoneDate(value, timezone) {
+    var fields = value.split("T");
+    var dateFields = fields[0].split("-").map(Number);
+    var timeFields = fields[1].split(":").map(Number);
+    var wallTime = Date.UTC(dateFields[0], dateFields[1] - 1, dateFields[2], timeFields[0], timeFields[1]);
+    var date = new Date(wallTime);
+    var offset = getTimezoneOffset(date, timezone);
+    date = new Date(wallTime - offset);
+    offset = getTimezoneOffset(date, timezone);
+    return new Date(wallTime - offset);
+  }
+
+  function updateComparison() {
+    var input = $("#comparisonDateTime").val();
+    var result = $("#comparisonResult");
+    if (!input) {
+      result.text("Choose a date and time to compare.");
+      return;
+    }
+
+    var source = $("#sourceTimezone").val();
+    var target = $("#targetTimezone").val();
+    var date = parseTimezoneDate(input, source);
+    var formatted = new Intl.DateTimeFormat("en-GB", {
+      timeZone: target,
+      dateStyle: "medium",
+      timeStyle: "short",
+      hour12: true
+    }).format(date);
+
+    result.text("Equivalent time: " + formatted);
+  }
+
+  $("#comparisonDateTime, #sourceTimezone, #targetTimezone").on("input change", updateComparison);
 });

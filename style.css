@@ -15,24 +15,38 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 48px 16px;
+  box-sizing: border-box;
 }
 
 .title {
   color: #fff;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
 
 .row {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
+  width: min(1200px, 100%);
 }
 
 .column{
   text-align: center;
-  margin: 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.column canvas {
+  display: block;
+  width: min(400px, 100%);
+  height: auto;
+  aspect-ratio: 1;
 }
 
 .digital-clock {
@@ -46,13 +60,93 @@ body {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
+.comparison {
+  order: 2;
+  align-self: center;
+  width: min(960px, 100%);
+  margin: 8px 0 16px;
+  padding: 28px 32px 32px;
+  box-sizing: border-box;
+  color: #fff;
+  background: rgba(20, 27, 40, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #f88;
+  border-radius: 18px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.24);
+}
+
+.comparison h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.comparison-description {
+  margin: 8px 0 24px;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+.comparison-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 780px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+.comparison-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.comparison-controls select,
+.comparison-controls input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  background: #fff;
+  color: #202938;
+  font: inherit;
+}
+
+.comparison-result {
+  max-width: 780px;
+  margin: 24px auto 0;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: rgba(248, 136, 136, 0.14);
+  color: #fff;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: bold;
+}
+
 /* Mobile screen */
 @media only screen and (max-width: 767px) {
   .row {
-    display: block;
+    grid-template-columns: 1fr;
+    gap: 32px;
   }
 
   .digital-clock {
     margin-bottom: 28px;
+  }
+
+  .comparison {
+    padding: 24px 16px;
+  }
+
+  .comparison-controls {
+    grid-template-columns: 1fr;
   }
 }
