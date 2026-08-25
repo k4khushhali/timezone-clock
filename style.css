@@ -89,10 +89,14 @@ body {
 
 .comparison-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 780px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  max-width: 920px;
   margin: 0 auto;
   gap: 16px;
+}
+
+.comparison-controls label:first-child {
+  grid-column: span 2;
 }
 
 .comparison-controls label {
@@ -109,13 +113,14 @@ body {
 .comparison-controls input {
   width: 100%;
   box-sizing: border-box;
-  min-height: 38px;
-  padding: 6px 10px;
+  min-height: 46px;
+  padding: 8px 12px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   background: #fff;
   color: #202938;
   font: inherit;
+  font-size: 1rem;
 }
 
 .comparison-result {
@@ -148,5 +153,9 @@ body {
 
   .comparison-controls {
     grid-template-columns: 1fr;
+  }
+
+  .comparison-controls label:first-child {
+    grid-column: auto;
   }
 }

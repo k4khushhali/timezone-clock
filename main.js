@@ -410,15 +410,23 @@ $(document).ready(function(){
   }
 
   function updateComparison() {
-    var input = $("#comparisonDateTime").val();
+    var dateValue = $("#comparisonDate").val();
+    var hourValue = $("#comparisonHour").val();
+    var minuteValue = $("#comparisonMinute").val();
+    var meridiemValue = $("#comparisonMeridiem").val();
     var result = $("#comparisonResult");
-    if (!input) {
+    if (!dateValue || !hourValue || !minuteValue || !meridiemValue) {
       result.text("Choose a date and time to compare.");
       return;
     }
 
     var source = $("#sourceTimezone").val();
     var target = $("#targetTimezone").val();
+    var hour = Number(hourValue) % 12;
+    if (meridiemValue === "PM") {
+      hour += 12;
+    }
+    var input = dateValue + "T" + String(hour).padStart(2, "0") + ":" + minuteValue;
     var date = parseTimezoneDate(input, source);
     var formatted = new Intl.DateTimeFormat("en-GB", {
       timeZone: target,
@@ -430,5 +438,12 @@ $(document).ready(function(){
     result.text("Equivalent time: " + formatted);
   }
 
-  $("#comparisonDateTime, #sourceTimezone, #targetTimezone").on("input change", updateComparison);
+  for (var minute = 0; minute < 60; minute++) {
+    $("#comparisonMinute").append(
+      $("<option>").val(String(minute).padStart(2, "0")).text(String(minute).padStart(2, "0"))
+    );
+  }
+
+  $("#comparisonDate, #comparisonHour, #comparisonMinute, #comparisonMeridiem, #sourceTimezone, #targetTimezone")
+    .on("input change", updateComparison);
 });
