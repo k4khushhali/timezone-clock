@@ -3,6 +3,7 @@ This project is a simple web application that displays clocks for different time
 
 ## Features
 - Displays the current time for London, India, and Florida.
+- Displays a digital clock alongside each analog clock.
 - Updates the time automatically every second.
 - Simple and intuitive user interface.
 

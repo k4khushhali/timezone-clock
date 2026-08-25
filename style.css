@@ -35,9 +35,24 @@ body {
   margin: 12px;
 }
 
+.digital-clock {
+  display: block;
+  margin-top: 16px;
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
 /* Mobile screen */
 @media only screen and (max-width: 767px) {
   .row {
     display: block;
+  }
+
+  .digital-clock {
+    margin-bottom: 28px;
   }
 }

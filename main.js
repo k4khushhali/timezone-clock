@@ -342,6 +342,24 @@ $(document).ready(function(){
   		},{
   			timezone:"Europe/London"
   		});
+
+	  function updateDigitalClocks() {
+	    $(".digital-clock").each(function () {
+	      var timezone = $(this).data("timezone");
+	      var time = new Intl.DateTimeFormat("en-GB", {
+	        timeZone: timezone,
+	        hour: "2-digit",
+	        minute: "2-digit",
+	        second: "2-digit",
+	        hour12: true
+	      }).format(new Date());
+
+	      $(this).text(time);
+	    });
+	  }
+
+	  updateDigitalClocks();
+	  window.setInterval(updateDigitalClocks, 1000);
 	});
 
 	$(function () {
